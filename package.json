@@ -10,5 +10,8 @@
   "license": "ISC",
   "devDependencies": {
     "express": "^4.16.2"
+  },
+  "dependencies": {
+    "mysql2": "^1.5.1"
   }
 }
