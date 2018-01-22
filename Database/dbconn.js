@@ -2,24 +2,31 @@ const mysql = require('mysql2')
 
 var dbcredentials = require('./dbcredentials');
 
-//const conn = mysql.createConnection(dbcredentials);
-const conn = mysql.createConnection({
-  host: 'socialcontract.cche09jkxdr9.us-east-2.rds.amazonaws.com',
-  database: 'socialcontract',
-  port: 3306,
-  user: 'anderson_ryan',
-  password: 'TheRipGetRipper',
-  reconnect: true,
-  data_source_provider: 'rds',
-  type: 'mysql'
-});
+const conn = mysql.createConnection(dbcredentials.db);
 
-var dbTest = function() {
-    var sql = "INSERT INTO Users VALUES (\'test2@test.com\', \'password\', 10, 0);";
-    conn.query(sql, function(err, result, fields) {
+var login = function(email, password, callback) {
+    var sql = "SELECT COUNT(*) as count FROM Users WHERE email = ? AND password = ?;";
+    var query = conn.query(sql, [email, password], function(err, result, fields) {
+
         if (err) throw err;
+        if (result[0].count > 0) {
+          callback(true);
+        } else {
+          callback(false);
+        }
     });
 };
 
+var register = function(email, password, callback) {
+    var sql = "INSERT INTO Users VALUES (?, ?, 10, 0);";
+    conn.query(sql, [email, password], function(err, result, fields) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(result);
+        }
+    });
+}
 
-module.exports.dbTest = dbTest;
+module.exports.login = login;
+module.exports.register = register;
