@@ -1,7 +1,11 @@
 const express = require('express')
+const crypto = require('crypto')
 const app = express()
 
+var bodyParser = require('body-parser');
 var dbconn = require('./Database/dbconn');
+
+app.use( bodyParser.json() );
 
 app.get('/test/', (req, res) => {
   res.send('Server reached successfully')
@@ -20,6 +24,30 @@ app.get('/loginTest', (req, res) => {
 app.get('/registerTest', (req, res) => {
     dbconn.register('test3@test.com', 'password', function(result) {
         res.send(result);
+    });
+});
+
+app.post('/initRegistration', (req, res) => {
+    dbconn.checkUser(req.body.email, function(result) {
+        if (result == false) {
+            crypto.randomBytes(32, (err, buff) => {
+                if (err) throw err;
+                res.send(buff.toString('hex'));
+            });
+        } else {
+            res.send("User already exists");
+        }
+    });
+});
+
+app.post('/register', (req, res) => {
+    console.log(req.body);
+    dbconn.register(req.body.email, req.body.password, req.body.salt, function(err) {
+        if(err) {
+            res.send({'success' : false, 'message' : err});
+        } else {
+            res.send({'success' : true});
+        }
     });
 });
 
