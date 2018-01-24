@@ -32,10 +32,10 @@ app.post('/initRegistration', (req, res) => {
         if (result == false) {
             crypto.randomBytes(32, (err, buff) => {
                 if (err) throw err;
-                res.send({"result": buff.toString('hex')});
+                res.send({"result": buff.toString('hex'), 'success' : true});
             });
         } else {
-            res.send({"result" : "User already exists"});
+            res.send({"result" : "User already exists", 'success' : false});
         }
     });
 });
