@@ -25,12 +25,12 @@ app.get('', (req, res) => {
 // do this before login to get the user's salt and a one-time nonce
 app.post('/loginInit', (req, res) => {
     dbconn.checkUser(req.body.email, function(result) {
-        if (result) {
-            dbconn.getSalt(req.body.email, function(result) {
+        if (result.success == true) {
+            dbconn.getSalt(req.body.email, function(salt) {
                  crypto.randomBytes(16, (err, buff) => {
                     if (err) throw err;
                     nonceMap.set(req.body.email, buff.toString('hex'));
-                    res.send({'nonce': buff.toString('hex'), 'salt': result,'success' : true});
+                    res.send({'nonce': buff.toString('hex'), 'salt': salt, 'success' : true, 'userId' : result.userId});
                 });
             });
         } else {
@@ -51,7 +51,7 @@ app.post('/login', (req, res) => {
         if(dbPass == req.body.password) {
             res.send({'success': true});
         } else {
-            res.send({'success': false, 'message' : 'Incorrect password', 'dbPass' : dbPass, 'userPass': req.body.password});
+            res.send({'success': false, 'message' : 'Incorrect password'});
         }
 
     });
@@ -60,7 +60,7 @@ app.post('/login', (req, res) => {
 // do this before registration to get salt
 app.post('/initRegistration', (req, res) => {
     dbconn.checkUser(req.body.email, function(result) {
-        if (result == false) {
+        if (result.success == false) {
             crypto.randomBytes(32, (err, buff) => {
                 if (err) throw err;
                 res.send({"result": buff.toString('hex'), 'success' : true});
@@ -78,7 +78,14 @@ app.post('/register', (req, res) => {
         if(err) {
             res.send({'success' : false, 'message' : err});
         } else {
-            res.send({'success' : true});
+            dbconn.checkUser(req.body.email, function(result) {
+                if (result.success) {
+                    res.send({'success' : true, "userId" : result.userId});
+                } else {
+                    res.send({'success': false, 'message' : 'There was an unexpected error in registration.'});
+                }
+
+            });
         }
     });
 });
