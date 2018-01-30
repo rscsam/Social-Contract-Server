@@ -19,7 +19,7 @@ var login = function(email, callback) {
 
 // adds new user to database
 var register = function(email, password, salt, callback) {
-    var sql = "INSERT INTO Users VALUES (?, ?, ?, 10, 0);";
+    var sql = "INSERT INTO Users VALUES (0, ?, ?, ?, 10, 0);";
     conn.query(sql, [email, password, salt], function(err, result, fields) {
         callback(err);
     });
