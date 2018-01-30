@@ -27,13 +27,13 @@ var register = function(email, password, salt, callback) {
 
 //
 var checkUser = function(email, callback) {
-    var sql = "SELECT COUNT(*) as count FROM Users WHERE email = ?;";
+    var sql = "SELECT userId FROM Users WHERE email = ?;";
     var query = conn.query(sql, [email], function(err, result, fields) {
         if (err) throw err;
-        if (result[0].count > 0) {
-            callback(true);
+        if (result.length > 0) {
+            callback({"success": true, "userId" : result[0].userId});
         } else {
-            callback(false);
+            callback({"success": false});
         }
     });
 }
