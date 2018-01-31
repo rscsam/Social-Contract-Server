@@ -94,12 +94,12 @@ app.post('/register', (req, res) => {
 app.post('/changeEmail', (req, res) => {
     console.log(req.body);
     res.send({'success' : true, 'message' : 'Change email endpoint hit.'});
-}
+});
 
 // updates the user's password
-app.post('changePassword', (req, res) => {
+app.post('/changePassword', (req, res) => {
     console.log(req.body);
     res.send({'success' : true, 'message' : 'Change password endpoint hit.'});
-}
+});
 
 app.listen(3000, () => console.log('Server running on port 3000'))
