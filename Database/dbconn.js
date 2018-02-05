@@ -114,7 +114,7 @@ var editInterest = function(userId, interest, callback) {
     });
 }
 
-// inserts a twitter account into the database
+// inserts a Twitter account into the database
 var addTwitter = function(socialContractId, authToken, authSecret, username, twitterId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
     var sql = "INSERT INTO TwitterAccounts VALUE(?, ?, ?, ?, ?);";
@@ -134,6 +134,7 @@ var addTwitter = function(socialContractId, authToken, authSecret, username, twi
     });
 }
 
+// deletes a Twitter account from the database
 var deleteTwitter = function(socialContractId, authToken, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
     var sql = "DELETE FROM TwitterAccounts WHERE socialContractId = ? AND authToken = ?;";
@@ -144,12 +145,79 @@ var deleteTwitter = function(socialContractId, authToken, callback) {
         } else {
             callback({'success': false, 'message': 'Twitter account does not exist'});
         }
+        conn.close();
     });
-
-    conn.close();
-
 }
 
+// adds a Facebook account into the database
+var addFacebook = function(socialContractId, accessToken, facebookId, applicationId) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "INSERT INTO FBAccounts VALUE(?, ?, ?, ?);";
+    var query = conn.query(sql, [socialContractId, accessToken, facebookId, applicationId], function(err, result, fields) {
+        if (err) {
+            if (err.code == 1062) {
+                callback({'success' : false, 'message': 'This Facebook account has already been connected'});
+            } else if (err.code == 1452) {
+               callback({'success' : false, 'message': 'User ID does not match'});
+            }
+        } else if (result.affectedRows > 0) {
+            callback({'success': true})
+        } else {
+            callback({'success': false, 'message': 'An unexpected error has occured'});
+        }
+        conn.close();
+    });
+}
+
+// deletes a Facebook account from the database
+var deleteFacebook = function(socialContractId, accessToken, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "DELETE FROM FBAccounts WHERE socialContractId = ? AND accessToken = ?;";
+    var query = conn.query(sql, [socialContractId, accessToken], function(err, result, fields) {
+        if (err) throw err;
+        if (result.affectedRows > 0) {
+            callback({'success': true});
+        } else {
+            callback({'success': false, 'message': 'Facebook account does not exist'});
+        }
+        conn.close();
+    });
+}
+
+// adds an Instagram account into the database
+var addInstagram = function(socialContractId, accessToken, instagramId, username) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "INSERT INTO InstagramAccounts VALUE(?, ?, ?, ?);";
+    var query = conn.query(sql, [socialContractId, accessToken, instagramId, username], function(err, result, fields) {
+        if (err) {
+            if (err.code == 1062) {
+                callback({'success' : false, 'message': 'This Instagram account has already been connected'});
+            } else if (err.code == 1452) {
+               callback({'success' : false, 'message': 'User ID does not match'});
+            }
+        } else if (result.affectedRows > 0) {
+            callback({'success': true})
+        } else {
+            callback({'success': false, 'message': 'An unexpected error has occured'});
+        }
+        conn.close();
+    });
+}
+
+// deletes a Instagram account from the database
+var deleteInstagram = function(socialContractId, accessToken, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "DELETE FROM InstagramAccounts WHERE socialContractId = ? AND accessToken = ?;";
+    var query = conn.query(sql, [socialContractId, accessToken], function(err, result, fields) {
+        if (err) throw err;
+        if (result.affectedRows > 0) {
+            callback({'success': true});
+        } else {
+            callback({'success': false, 'message': 'Instagram account does not exist'});
+        }
+        conn.close();
+    });
+}
 
 module.exports.login = login;
 module.exports.register = register;
@@ -159,3 +227,9 @@ module.exports.editPassword = editPassword;
 module.exports.editEmail = editEmail;
 module.exports.editInterest = editInterest;
 module.exports.getInterest = getInterest;
+module.exports.addTwitter = addTwitter;
+module.exports.deleteTwitter = deleteTwitter;
+module.exports.addFacebook = addFacebook;
+module.exports.deleteFacebook = deleteFacebook;
+module.exports.addInstagram = addInstagram;
+module.exports.deleteInstagram = deleteInstagram;
