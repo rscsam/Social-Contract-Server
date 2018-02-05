@@ -10,6 +10,7 @@ var dbcredentials = require('./dbcredentials');
 var login = function(email, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
     var sql = "SELECT password FROM Users WHERE email = ?;";
+    console.log('dbconn reached');
     var query = conn.query(sql, [email], function(err, result, fields) {
         if (err) throw err;
         callback(result[0].password);
