@@ -113,6 +113,42 @@ var editInterest = function(userId, interest, callback) {
     });
 }
 
+// inserts a twitter account into the database
+var addTwitter = function(socialContractId, authToken, authSecret, username, twitterId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "INSERT INTO TwitterAccounts VALUE(?, ?, ?, ?, ?);";
+    var query = conn.query(sql, [socialContractId, authToken, authSecret, username, twitterId], function(err, result, fields) {
+        if (err) {
+            if (err.code == 1062) {
+                callback({'success' : false, 'message': 'This Twitter account has already been connected'});
+            } else if (err.code == 1452) {
+               callback({'success' : false, 'message': 'User ID does not match'});
+            }
+        } else if (result.affectedRows > 0) {
+            callback({'success': true})
+        } else {
+            callback({'success': false, 'message': 'An unexpected error has occured'});
+        }
+        conn.close();
+    });
+}
+
+var deleteTwitter = function(socialContractId, authToken, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "DELETE FROM TwitterAccounts WHERE socialContractId = ? AND authToken = ?;";
+    var query = conn.query(sql, [socialContractId, authToken], function(err, result, fields) {
+        if (err) throw err;
+        if (result.affectedRows > 0) {
+            callback({'success': true});
+        } else {
+            callback({'success': false, 'message': 'Twitter account does not exist'});
+        }
+    });
+
+    conn.close();
+
+}
+
 
 module.exports.login = login;
 module.exports.register = register;
