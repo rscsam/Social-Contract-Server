@@ -219,6 +219,41 @@ var deleteInstagram = function(socialContractId, accessToken, callback) {
     });
 }
 
+// returns all the Twitter accounts for a user
+var getTwitterAccounts = function(socialContractId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "SELECT * FROM TwitterAccounts WHERE socialContractId = ?;";
+    var query = conn.query(sql, [socialContractId], function(err, result, fields) {
+        if (err) throw err;
+        callback(result);
+        conn.close();
+    });
+}
+
+// returns all the Facebook accounts for a user
+var getFacebookAccounts = function(socialContractId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "SELECT * FROM FBAccounts WHERE socialContractId = ?;";
+    var query = conn.query(sql, [socialContractId], function(err, result, fields) {
+        if (err) throw err;
+        callback(result);
+        conn.close();
+    });
+}
+
+// returns all the Instagram accounts for a user
+var getInstagramAccounts = function(socialContractId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "SELECT * FROM InstagramAccounts WHERE socialContractId = ?;";
+    var query = conn.query(sql, [socialContractId], function(err, result, fields) {
+        if (err) throw err;
+        callback(result);
+        conn.close();
+    });
+}
+
+
+
 module.exports.login = login;
 module.exports.register = register;
 module.exports.checkUser = checkUser;
@@ -233,3 +268,6 @@ module.exports.addFacebook = addFacebook;
 module.exports.deleteFacebook = deleteFacebook;
 module.exports.addInstagram = addInstagram;
 module.exports.deleteInstagram = deleteInstagram;
+module.exports.getTwitterAccounts = getTwitterAccounts;
+module.exports.getFacebookAccounts = getFacebookAccounts;
+module.exports.getInstagramAccounts = getInstagramAccounts;
