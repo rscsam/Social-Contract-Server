@@ -44,4 +44,5 @@ app.post('/changePassword', (req, res) => {
     res.send({'success' : true, 'message' : 'Change password endpoint hit.'});
 });
 
+
 app.listen(3000, () => console.log('Server running on port 3000'))
