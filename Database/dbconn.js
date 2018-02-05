@@ -55,27 +55,61 @@ var getSalt = function(email, callback) {
 
 // changes the user's email
 var editEmail = function(email, userId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
     var sql = "UPDATE Users SET email = ? WHERE userId = ?;";
     var query = conn.query(sql, [email, userId], function(err, result, fields) {
         if (err) throw err;
-        if (result.length > 0) {
-            callback(false);
-        } else {
+        if(result.affectedRows > 0) {
             callback(true);
+        } else {
+            callback(false);
         }
+        conn.close();
     });
 }
 
 // changes the user's password
 var editPassword = function(password, userId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
     var sql = "UPDATE Users SET password = ? WHERE userId = ?;";
     var query = conn.query(sql, [password, userId], function(err, result, fields) {
         if (err) throw err;
-        if (result.length > 0) {
-            callback(false);
-        } else {
+        if(result.affectedRows > 0) {
             callback(true);
+        } else {
+            callback(false);
         }
+        conn.close();
+    });
+}
+
+// gets the user's interest profile
+var getInterest = function(userId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "SELECT interest FROM Users WHERE userId = ?;";
+    var query = conn.query(sql, [userId], function(err, result, fields) {
+        if (err) throw err;
+        if (result.length > 0) {
+            callback({'success': true, 'interest' : result[0].interest})
+        } else {
+            callback({'success': false});
+        }
+        conn.close();
+    });
+}
+
+// edits the user's interest profile
+var editInterest = function(userId, interest, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "UPDATE Users SET interest = ? WHERE userId = ?;";
+    var query = conn.query(sql, [interest, userId], function(err, result, fields) {
+        if (err) throw err;
+        if (result.affectedRows > 0) {
+            callback({'success': true});
+        } else {
+            callback({'success' : false});
+        }
+        conn.close();
     });
 }
 
@@ -86,3 +120,5 @@ module.exports.checkUser = checkUser;
 module.exports.getSalt = getSalt;
 module.exports.editPassword = editPassword;
 module.exports.editEmail = editEmail;
+module.exports.editInterest = editInterest;
+module.exports.getInterest = getInterest;
