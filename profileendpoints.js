@@ -1,4 +1,5 @@
 var dbconn = require('./Database/dbconn');
+const crypto = require('crypto')
 
 var login = function(req, res) {
     dbconn.login(req.body.email, function(result) {
