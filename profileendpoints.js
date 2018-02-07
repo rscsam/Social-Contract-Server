@@ -65,7 +65,32 @@ var register = function(req, res) {
     });
 }
 
+var changeEmail = function(req, res) {
+    console.log(req.body);
+    dbconn.editEmail(req.body.email, req.body.userId, function(result) {
+        if(!result) {
+            res.send({'success' : false, 'message' : "error editing email"});
+        } else {
+            res.send({'success' : true});
+        }
+    });
+}
+
+var changePassword = function(req, res) {
+    console.log(req.body);
+    dbconn.editPassword(req.body.password, req.body.userId, function(result) {
+        if(!result) {
+            res.send({'success' : false, 'message' : "error editing password"});
+        } else {
+            res.send({'success' : true});
+        }
+    });
+}
+
 module.exports.login = login;
 module.exports.logininit = logininit;
 module.exports.initregistration = initregistration;
 module.exports.register = register;
+module.exports.changeEmail = changeEmail;
+module.exports.changePassword = changePassword;
+
