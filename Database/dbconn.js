@@ -124,6 +124,8 @@ var addTwitter = function(socialContractId, authToken, authSecret, username, twi
                 callback({'success' : false, 'message': 'This Twitter account has already been connected'});
             } else if (err.code == 1452) {
                callback({'success' : false, 'message': 'User ID does not match'});
+            } else {
+                callback({'success' : false, 'message': err.message})
             }
         } else if (result.affectedRows > 0) {
             callback({'success': true})
@@ -135,10 +137,10 @@ var addTwitter = function(socialContractId, authToken, authSecret, username, twi
 }
 
 // deletes a Twitter account from the database
-var deleteTwitter = function(socialContractId, authToken, callback) {
+var deleteTwitter = function(socialContractId, twitterId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
-    var sql = "DELETE FROM TwitterAccounts WHERE socialContractId = ? AND authToken = ?;";
-    var query = conn.query(sql, [socialContractId, authToken], function(err, result, fields) {
+    var sql = "DELETE FROM TwitterAccounts WHERE socialContractId = ? AND twitterId = ?;";
+    var query = conn.query(sql, [socialContractId, twitterId], function(err, result, fields) {
         if (err) throw err;
         if (result.affectedRows > 0) {
             callback({'success': true});
@@ -150,15 +152,17 @@ var deleteTwitter = function(socialContractId, authToken, callback) {
 }
 
 // adds a Facebook account into the database
-var addFacebook = function(socialContractId, accessToken, facebookId, applicationId) {
+var addFacebook = function(socialContractId, accessToken, facebookId, applicationId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
     var sql = "INSERT INTO FBAccounts VALUE(?, ?, ?, ?);";
     var query = conn.query(sql, [socialContractId, accessToken, facebookId, applicationId], function(err, result, fields) {
         if (err) {
-            if (err.code == 1062) {
+            if (err.errno == 1062) {
                 callback({'success' : false, 'message': 'This Facebook account has already been connected'});
-            } else if (err.code == 1452) {
-               callback({'success' : false, 'message': 'User ID does not match'});
+            } else if (err.errno == 1452) {
+                callback({'success' : false, 'message': 'User ID does not match'});
+            } else {
+                callback({'success' : false, 'message': err});
             }
         } else if (result.affectedRows > 0) {
             callback({'success': true})
@@ -170,10 +174,10 @@ var addFacebook = function(socialContractId, accessToken, facebookId, applicatio
 }
 
 // deletes a Facebook account from the database
-var deleteFacebook = function(socialContractId, accessToken, callback) {
+var deleteFacebook = function(socialContractId, facebookId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
-    var sql = "DELETE FROM FBAccounts WHERE socialContractId = ? AND accessToken = ?;";
-    var query = conn.query(sql, [socialContractId, accessToken], function(err, result, fields) {
+    var sql = "DELETE FROM FBAccounts WHERE socialContractId = ? AND facebookId = ?;";
+    var query = conn.query(sql, [socialContractId, facebookId], function(err, result, fields) {
         if (err) throw err;
         if (result.affectedRows > 0) {
             callback({'success': true});
@@ -185,30 +189,30 @@ var deleteFacebook = function(socialContractId, accessToken, callback) {
 }
 
 // adds an Instagram account into the database
-var addInstagram = function(socialContractId, accessToken, instagramId, username) {
+var addInstagram = function(socialContractId, accessToken, instagramId, username, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
     var sql = "INSERT INTO InstagramAccounts VALUE(?, ?, ?, ?);";
     var query = conn.query(sql, [socialContractId, accessToken, instagramId, username], function(err, result, fields) {
         if (err) {
-            if (err.code == 1062) {
+            if (err.errno == 1062) {
                 callback({'success' : false, 'message': 'This Instagram account has already been connected'});
-            } else if (err.code == 1452) {
+            } else if (err.errno == 1452) {
                callback({'success' : false, 'message': 'User ID does not match'});
             }
         } else if (result.affectedRows > 0) {
             callback({'success': true})
         } else {
-            callback({'success': false, 'message': 'An unexpected error has occured'});
+            callback({'success' : false, 'message': err.message})
         }
         conn.close();
     });
 }
 
 // deletes a Instagram account from the database
-var deleteInstagram = function(socialContractId, accessToken, callback) {
+var deleteInstagram = function(socialContractId, instagramId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
-    var sql = "DELETE FROM InstagramAccounts WHERE socialContractId = ? AND accessToken = ?;";
-    var query = conn.query(sql, [socialContractId, accessToken], function(err, result, fields) {
+    var sql = "DELETE FROM InstagramAccounts WHERE socialContractId = ? AND instagramId = ?;";
+    var query = conn.query(sql, [socialContractId, instagramId], function(err, result, fields) {
         if (err) throw err;
         if (result.affectedRows > 0) {
             callback({'success': true});

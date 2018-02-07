@@ -44,5 +44,22 @@ app.post('/changePassword', (req, res) => {
     res.send({'success' : true, 'message' : 'Change password endpoint hit.'});
 });
 
+app.post('/addTwitter', (req, res) => socialmedia.addTwitter(req, res) );
+
+app.post('/addFacebook', (req, res) => socialmedia.addFacebook(req, res) );
+
+app.post('/addInstagram', (req, res) => socialmedia.addInstagram(req, res) );
+
+app.post('/deleteTwitter', (req, res) => socialmedia.deleteTwitter(req, res) );
+
+app.post('/deleteFacebook', (req, res) => socialmedia.deleteFacebook(req, res) );
+
+app.post('/deleteInstagram', (req, res) => socialmedia.deleteInstagram(req, res) );
+
+app.post('/twitterAccounts', (req, res) => socialmedia.getTwitterAccounts(req, res) );
+
+app.post('/facebookAccounts', (req, res) => socialmedia.getFacebookAccounts(req, res) );
+
+app.post('/instagramAccounts', (req, res) => socialmedia.getInstagramAccounts(req, res) );
 
 app.listen(3000, () => console.log('Server running on port 3000'))
