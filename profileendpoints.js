@@ -1,6 +1,9 @@
 var dbconn = require('./Database/dbconn');
 const crypto = require('crypto');
 
+//holds a username and the current nonce
+var nonceMap = new Map();
+
 var login = function(req, res) {
     dbconn.login(req.body.email, function(result) {
         const hash = crypto.createHash('sha256');
