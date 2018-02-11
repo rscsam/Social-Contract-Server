@@ -67,24 +67,36 @@ var register = function(req, res) {
 
 var changeEmail = function(req, res) {
     console.log(req.body);
-    dbconn.editEmail(req.body.email, req.body.userId, function(result) {
-        if(!result) {
-            res.send({'success' : false, 'message' : "error editing email"});
-        } else {
-            res.send({'success' : true});
-        }
-    });
+    if (req.body.email == null || req.body.email == "") {
+        res.send({'success' : false, 'message' : "email is blank"});
+    } else if (req.body.userId == null || req.body.userId == "") {
+        res.send({'success' : false, 'message' : "userId is blank"});
+    } else {
+        dbconn.editEmail(req.body.email, req.body.userId, function(result) {
+            if(!result) {
+                res.send({'success' : false, 'message' : "error editing email"});
+            } else {
+                res.send({'success' : true});
+            }
+        });
+    }
 }
 
 var changePassword = function(req, res) {
     console.log(req.body);
-    dbconn.editPassword(req.body.password, req.body.userId, function(result) {
-        if(!result) {
-            res.send({'success' : false, 'message' : "error editing password"});
-        } else {
-            res.send({'success' : true});
-        }
-    });
+    if (req.body.password == null || req.body.password == "") {
+        res.send({'success' : false, 'message' : "password is blank"});
+    } else if (req.body.userId == null || req.body.password == "") {
+        res.send({'success' : false, 'message' : "userId is blank"});
+    } else {
+        dbconn.editPassword(req.body.password, req.body.userId, function(result) {
+            if(!result) {
+                res.send({'success' : false, 'message' : "error editing password"});
+            } else {
+                res.send({'success' : true});
+            }
+        });
+    }
 }
 
 module.exports.login = login;
