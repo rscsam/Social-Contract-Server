@@ -89,7 +89,7 @@ var changePassword = function(req, res) {
     console.log(req.body);
     if (req.body.password == null || req.body.password == "") {
         res.send({'success' : false, 'message' : "password is blank"});
-    } else if (req.body.userId == null || req.body.password == "") {
+    } else if (req.body.userId == null || req.body.userId == "") {
         res.send({'success' : false, 'message' : "userId is blank"});
     } else {
         dbconn.editPassword(req.body.password, req.body.userId, function(result) {
