@@ -62,9 +62,37 @@ var register = function(req, res) {
                 } else {
                     res.send({'success': false, 'message' : 'There was an unexpected error in registration.'});
                 }
-
             });
         }
+    });
+}
+
+module.exports.updateInterestProfile = function(req, res) {
+    profileBitString = 0;
+    if (req.body.music) profileBitString += 1;
+    if (req.body.food) profileBitString += 2;
+    if (req.body.movies) profileBitString += 4;
+    if (req.body.videogames) profileBitString += 8;
+    if (req.body.sports) profileBitString += 16;
+    if (req.body.memes) profileBitString += 32;
+    dbconn.editInterest(req.body.socialContractId, profileBitString, function(result) {
+        res.send(result);
+    });
+}
+
+module.exports.getInterestProfile = function(req, res) {
+    dbconn.getInterest(req.body.socialContractId, function(result) {
+        if (result.success) {
+            num = result.interest;
+            delete result.interest;
+            result['music'] = (num & 1) == 1;
+            result['food'] = (num & 2) == 2;
+            result['movies'] = (num & 4) == 4;
+            result['videogames'] = (num & 8) == 8;
+            result['sports'] = (num & 16) == 16;
+            result['memes'] = (num & 32) == 32;
+        }
+        res.send(result);
     });
 }
 
