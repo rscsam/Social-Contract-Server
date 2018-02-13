@@ -31,16 +31,10 @@ app.post('/initRegistration', (req, res) => profile.initregistration(req, res) )
 app.post('/register', (req, res) => profile.register(req, res) );
 
 // updates the user's email address
-app.post('/changeEmail', (req, res) => {
-    console.log(req.body);
-    res.send({'success' : true, 'message' : 'Change email endpoint hit.'});
-});
+app.post('/changeEmail', (req, res) => profile.changeEmail(req, res) );
 
 // updates the user's password
-app.post('/changePassword', (req, res) => {
-    console.log(req.body);
-    res.send({'success' : true, 'message' : 'Change password endpoint hit.'});
-});
+app.post('/changePassword', (req, res) => profile.changePassword (req, res) );
 
 // update the users interest profile
 app.post('/updateInterestProfile', (req, res) => profile.updateInterestProfile(req, res) );

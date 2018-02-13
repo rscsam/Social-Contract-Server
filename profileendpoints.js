@@ -100,3 +100,6 @@ module.exports.login = login;
 module.exports.logininit = logininit;
 module.exports.initregistration = initregistration;
 module.exports.register = register;
+module.exports.changeEmail = changeEmail;
+module.exports.changePassword = changePassword;
+
