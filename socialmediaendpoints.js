@@ -34,7 +34,7 @@ module.exports.deleteFacebook = function(req, res) {
 
 module.exports.getFacebookAccounts = function(req, res) {
     dbconn.getFacebookAccounts(req.body.socialContractId, function(result) {
-        console.log(req);
+        console.log(req.body);
         console.log(res);
         res.send(result);
     });
