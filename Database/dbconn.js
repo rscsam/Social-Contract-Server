@@ -91,7 +91,7 @@ var getInterest = function(userId, callback) {
     var query = conn.query(sql, [userId], function(err, result, fields) {
         if (err) throw err;
         if (result.length > 0) {
-            callback({'success': true, 'interest' : result[0].interest})
+            callback({'success': true, 'interest' : result[0].interest[result[0].interest.length - 1]})
         } else {
             callback({'success': false});
         }

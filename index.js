@@ -9,8 +9,6 @@ var socialmedia = require('./socialmediaendpoints');
 
 app.use( bodyParser.json() );
 
-//holds a username and the current nonce
-var nonceMap = new Map();
 
 app.get('/test/', (req, res) => {res.send('Server reached successfully')});
 
@@ -37,6 +35,11 @@ app.post('/changeEmail', (req, res) => profile.changeEmail(req, res) );
 
 // updates the user's password
 app.post('/changePassword', (req, res) => profile.changePassword (req, res) );
+
+// update the users interest profile
+app.post('/updateInterestProfile', (req, res) => profile.updateInterestProfile(req, res) );
+
+app.post('/interestProfile', (req, res) => profile.getInterestProfile(req, res) );
 
 app.post('/addTwitter', (req, res) => socialmedia.addTwitter(req, res) );
 
