@@ -256,6 +256,121 @@ var getInstagramAccounts = function(socialContractId, callback) {
     });
 }
 
+// add a new item to the Twitter queue
+var addTwitterQueue = function(requestingUser, goal, type, id, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "INSERT INTO Queue VALUES(0, ?, 0, ?);";
+    var query = conn.query(sql, [requestingUser, goal], function(err, result, fields) {
+        if (err) throw err;
+        if (result.affectedRows > 0) {
+            var requestId = result.insertId
+
+            var sql2 = "INSERT INTO TwitterQueue VALUES(?, ?, ?);";
+            var query2 = conn.query(sql2, [requestId, type, id], function(err, result, fields) {
+                if (err) throw err;
+                if (result.affectedRows > 0) {
+                    callback({'success': true});
+                } else {
+                    callback({'success': false, 'message': 'Failed adding into TwitterQueue'});
+                }
+            });
+        } else {
+            callback({'success': false, 'message': 'Failed adding into Queue'});
+        }
+        conn.close();
+    });
+}
+// add a new item to the Facebook queue
+var addFacebookQueue = function(requestingUser, goal, type, id, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "INSERT INTO Queue VALUES(0, ?, 0, ?);";
+    var query = conn.query(sql, [requestingUser, goal], function(err, result, fields) {
+        if (err) throw err;
+        if (result.affectedRows > 0) {
+            var requestId = result.insertId
+
+            var sql2 = "INSERT INTO FacebookQueue VALUES(?, ?, ?);";
+            var query2 = conn.query(sql2, [requestId, type, id], function(err, result, fields) {
+                if (err) throw err;
+                if (result.affectedRows > 0) {
+                    callback({'success': true});
+                } else {
+                    callback({'success': false, 'message': 'Failed adding into FacebookQueue'});
+                }
+            });
+        } else {
+            callback({'success': false, 'message': 'Failed adding into Queue'});
+        }
+        conn.close();
+    });
+}
+
+// add a new item to the Instagram queue
+var addInstagramQueue = function(requestingUser, goal, type, id, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "INSERT INTO Queue VALUES(0, ?, 0, ?);";
+    var query = conn.query(sql, [requestingUser, goal], function(err, result, fields) {
+        if (err) throw err;
+        if (result.affectedRows > 0) {
+            var requestId = result.insertId
+
+            var sql2 = "INSERT INTO InstagramQueue VALUES(?, ?, ?);";
+            var query2 = conn.query(sql2, [requestId, type, id], function(err, result, fields) {
+                if (err) throw err;
+                if (result.affectedRows > 0) {
+                    callback({'success': true});
+                } else {
+                    callback({'success': false, 'message': 'Failed adding into InstagramQueue'});
+                }
+            });
+        } else {
+            callback({'success': false, 'message': 'Failed adding into Queue'});
+        }
+        conn.close();
+    });
+}
+
+// changes the user's amount of coins
+var editCoins = function(socialContractId, coins, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = 'UPDATE Users SET coins = ? WHERE userId = ?;';
+    var query = conn.query(sql, [coins, socialContractId], function(err, result, fields) {
+        if(err) throw err;
+        if(result.affectedRows > 0) {
+            callback({'success': true});
+        } else {
+            callback({'success': false, 'message': 'User does not exist'});
+        }
+        conn.close();
+    });
+}
+
+var getCoins = function(socialContractId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "SELECT coins from Users WHERE userId = ?;";
+    var query = conn.query(sql, [socialContractId], function(err, result, fields) {
+        if(err) throw err;
+        callback(result);
+        conn.close();
+    });
+}
+
+// returns a user's queue
+var getQueue = function(socialContractId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = 'SELECT * FROM ( ' +
+                'SELECT * FROM Queue NATURAL JOIN FacebookQueue WHERE requestingUser = ? ' +
+                'UNION ALL ' +
+                'SELECT * FROM Queue NATURAL JOIN TwitterQueue WHERE requestingUser = ? ' +
+                'UNION ALL ' +
+                'SELECT * FROM Queue NATURAL JOIN InstagramQueue WHERE requestingUser = ? ' +
+                ') as sum;';
+    var query = conn.query(sql, [socialContractId, socialContractId, socialContractId], function(err, result, fields) {
+        if(err) throw err;
+        callback(result);
+        conn.close();
+    });
+}
 
 
 module.exports.login = login;
@@ -275,3 +390,9 @@ module.exports.deleteInstagram = deleteInstagram;
 module.exports.getTwitterAccounts = getTwitterAccounts;
 module.exports.getFacebookAccounts = getFacebookAccounts;
 module.exports.getInstagramAccounts = getInstagramAccounts;
+module.exports.addTwitterQueue = addTwitterQueue;
+module.exports.addFacebookQueue = addFacebookQueue;
+module.exports.addInstagramQueue = addInstagramQueue;
+module.exports.editCoins = editCoins;
+module.exports.getCoins = getCoins;
+module.exports.getQueue = getQueue;

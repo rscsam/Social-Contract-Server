@@ -59,4 +59,4 @@ app.post('/facebookAccounts', (req, res) => socialmedia.getFacebookAccounts(req,
 
 app.post('/instagramAccounts', (req, res) => socialmedia.getInstagramAccounts(req, res) );
 
-app.listen(3000, () => console.log('Server running on port 3000'))
+app.listen(3000, () => console.log('Server running on port 3000'));
