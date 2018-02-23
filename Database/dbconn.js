@@ -229,7 +229,7 @@ var getTwitterAccounts = function(socialContractId, callback) {
     var sql = "SELECT * FROM TwitterAccounts WHERE socialContractId = ?;";
     var query = conn.query(sql, [socialContractId], function(err, result, fields) {
         if (err) throw err;
-        callback(result);
+        callback({"accounts": result});
         conn.close();
     });
 }
@@ -240,7 +240,7 @@ var getFacebookAccounts = function(socialContractId, callback) {
     var sql = "SELECT * FROM FBAccounts WHERE socialContractId = ?;";
     var query = conn.query(sql, [socialContractId], function(err, result, fields) {
         if (err) throw err;
-        callback(result);
+        callback({"accounts": result});
         conn.close();
     });
 }
@@ -251,7 +251,7 @@ var getInstagramAccounts = function(socialContractId, callback) {
     var sql = "SELECT * FROM InstagramAccounts WHERE socialContractId = ?;";
     var query = conn.query(sql, [socialContractId], function(err, result, fields) {
         if (err) throw err;
-        callback(result);
+        callback({"accounts": result});
         conn.close();
     });
 }
