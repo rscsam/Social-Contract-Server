@@ -118,7 +118,7 @@ var editInterest = function(userId, interest, callback) {
 var addTwitter = function(socialContractId, authToken, authSecret, username, twitterId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
     var sql = "INSERT INTO TwitterAccounts VALUE(?, ?, ?, ?, ?);";
-    var query = conn.query(sql, [socialContractId, authToken, authSecret, username, twitterId], function(err, result, fields) {
+    var query = conn.query(sql, [socialContractId, twitterId, authToken, authSecret, username], function(err, result, fields) {
         if (err) {
             if (err.code == 1062) {
                 callback({'success' : false, 'message': 'This Twitter account has already been connected'});
@@ -155,7 +155,7 @@ var deleteTwitter = function(socialContractId, twitterId, callback) {
 var addFacebook = function(socialContractId, accessToken, facebookId, applicationId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
     var sql = "INSERT INTO FBAccounts VALUE(?, ?, ?, ?);";
-    var query = conn.query(sql, [socialContractId, accessToken, facebookId, applicationId], function(err, result, fields) {
+    var query = conn.query(sql, [socialContractId, facebookId, accessToken, applicationId], function(err, result, fields) {
         if (err) {
             if (err.errno == 1062) {
                 callback({'success' : false, 'message': 'This Facebook account has already been connected'});
@@ -192,7 +192,7 @@ var deleteFacebook = function(socialContractId, facebookId, callback) {
 var addInstagram = function(socialContractId, accessToken, instagramId, username, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
     var sql = "INSERT INTO InstagramAccounts VALUE(?, ?, ?, ?);";
-    var query = conn.query(sql, [socialContractId, accessToken, instagramId, username], function(err, result, fields) {
+    var query = conn.query(sql, [socialContractId, instagramId, accessToken, username], function(err, result, fields) {
         if (err) {
             if (err.errno == 1062) {
                 callback({'success' : false, 'message': 'This Instagram account has already been connected'});
