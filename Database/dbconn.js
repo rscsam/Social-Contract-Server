@@ -118,7 +118,7 @@ var editInterest = function(userId, interest, callback) {
 var addTwitter = function(socialContractId, authToken, authSecret, username, twitterId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
     var sql = "INSERT INTO TwitterAccounts VALUE(?, ?, ?, ?, ?);";
-    var query = conn.query(sql, [socialContractId, authToken, authSecret, username, twitterId], function(err, result, fields) {
+    var query = conn.query(sql, [socialContractId, twitterId, authToken, authSecret, username], function(err, result, fields) {
         if (err) {
             if (err.code == 1062) {
                 callback({'success' : false, 'message': 'This Twitter account has already been connected'});
@@ -155,7 +155,7 @@ var deleteTwitter = function(socialContractId, twitterId, callback) {
 var addFacebook = function(socialContractId, accessToken, facebookId, applicationId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
     var sql = "INSERT INTO FBAccounts VALUE(?, ?, ?, ?);";
-    var query = conn.query(sql, [socialContractId, accessToken, facebookId, applicationId], function(err, result, fields) {
+    var query = conn.query(sql, [socialContractId, facebookId, accessToken, applicationId], function(err, result, fields) {
         if (err) {
             if (err.errno == 1062) {
                 callback({'success' : false, 'message': 'This Facebook account has already been connected'});
@@ -192,7 +192,7 @@ var deleteFacebook = function(socialContractId, facebookId, callback) {
 var addInstagram = function(socialContractId, accessToken, instagramId, username, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
     var sql = "INSERT INTO InstagramAccounts VALUE(?, ?, ?, ?);";
-    var query = conn.query(sql, [socialContractId, accessToken, instagramId, username], function(err, result, fields) {
+    var query = conn.query(sql, [socialContractId, instagramId, accessToken, username], function(err, result, fields) {
         if (err) {
             if (err.errno == 1062) {
                 callback({'success' : false, 'message': 'This Instagram account has already been connected'});
@@ -257,16 +257,16 @@ var getInstagramAccounts = function(socialContractId, callback) {
 }
 
 // add a new item to the Twitter queue
-var addTwitterQueue = function(requestingUser, goal, type, id, callback) {
+var addTwitterQueue = function(requestingUser, twitterId, goal, type, mediaId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
-    var sql = "INSERT INTO Queue VALUES(0, ?, 0, ?);";
-    var query = conn.query(sql, [requestingUser, goal], function(err, result, fields) {
+    var sql = "INSERT INTO Queue VALUES(0, 0, ?);";
+    var query = conn.query(sql, [goal], function(err, result, fields) {
         if (err) throw err;
         if (result.affectedRows > 0) {
             var requestId = result.insertId
 
-            var sql2 = "INSERT INTO TwitterQueue VALUES(?, ?, ?);";
-            var query2 = conn.query(sql2, [requestId, type, id], function(err, result, fields) {
+            var sql2 = "INSERT INTO TwitterQueue VALUES(?, ?, ?, ?, ?);";
+            var query2 = conn.query(sql2, [requestId, requestingUser, twitterId, type, mediaId], function(err, result, fields) {
                 if (err) throw err;
                 if (result.affectedRows > 0) {
                     callback({'success': true});
@@ -280,17 +280,18 @@ var addTwitterQueue = function(requestingUser, goal, type, id, callback) {
         conn.close();
     });
 }
+
 // add a new item to the Facebook queue
-var addFacebookQueue = function(requestingUser, goal, type, id, callback) {
+var addFacebookQueue = function(requestingUser, facebookId, goal, type, mediaId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
-    var sql = "INSERT INTO Queue VALUES(0, ?, 0, ?);";
-    var query = conn.query(sql, [requestingUser, goal], function(err, result, fields) {
+    var sql = "INSERT INTO Queue VALUES(0, 0, ?);";
+    var query = conn.query(sql, [goal], function(err, result, fields) {
         if (err) throw err;
         if (result.affectedRows > 0) {
             var requestId = result.insertId
 
-            var sql2 = "INSERT INTO FacebookQueue VALUES(?, ?, ?);";
-            var query2 = conn.query(sql2, [requestId, type, id], function(err, result, fields) {
+            var sql2 = "INSERT INTO FacebookQueue VALUES(?, ?, ?, ?, ?);";
+            var query2 = conn.query(sql2, [requestId, requestingUser, facebookId, type, mediaId], function(err, result, fields) {
                 if (err) throw err;
                 if (result.affectedRows > 0) {
                     callback({'success': true});
@@ -306,16 +307,16 @@ var addFacebookQueue = function(requestingUser, goal, type, id, callback) {
 }
 
 // add a new item to the Instagram queue
-var addInstagramQueue = function(requestingUser, goal, type, id, callback) {
+var addInstagramQueue = function(requestingUser, instagramId, goal, type, mediaId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
-    var sql = "INSERT INTO Queue VALUES(0, ?, 0, ?);";
-    var query = conn.query(sql, [requestingUser, goal], function(err, result, fields) {
+    var sql = "INSERT INTO Queue VALUES(0, 0, ?);";
+    var query = conn.query(sql, [goal], function(err, result, fields) {
         if (err) throw err;
         if (result.affectedRows > 0) {
             var requestId = result.insertId
 
-            var sql2 = "INSERT INTO InstagramQueue VALUES(?, ?, ?);";
-            var query2 = conn.query(sql2, [requestId, type, id], function(err, result, fields) {
+            var sql2 = "INSERT INTO InstagramQueue VALUES(?, ?, ?, ?, ?);";
+            var query2 = conn.query(sql2, [requestId, requestingUser, instagramId, type, mediaId], function(err, result, fields) {
                 if (err) throw err;
                 if (result.affectedRows > 0) {
                     callback({'success': true});
@@ -355,17 +356,33 @@ var getCoins = function(socialContractId, callback) {
     });
 }
 
-// returns a user's queue
-var getQueue = function(socialContractId, callback) {
+// returns a user's Facebook queue
+var getTwitterQueue = function(socialContractId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
-    var sql = 'SELECT * FROM ( ' +
-                'SELECT * FROM Queue NATURAL JOIN FacebookQueue WHERE requestingUser = ? ' +
-                'UNION ALL ' +
-                'SELECT * FROM Queue NATURAL JOIN TwitterQueue WHERE requestingUser = ? ' +
-                'UNION ALL ' +
-                'SELECT * FROM Queue NATURAL JOIN InstagramQueue WHERE requestingUser = ? ' +
-                ') as sum;';
-    var query = conn.query(sql, [socialContractId, socialContractId, socialContractId], function(err, result, fields) {
+    var sql = 'SELECT * FROM Queue NATURAL JOIN TwitterQueue WHERE requestingUser = ?';
+    var query = conn.query(sql, [socialContractId], function(err, result, fields) {
+        if(err) throw err;
+        callback(result);
+        conn.close();
+    });
+}
+
+// returns a user's Facebook queue
+var getFacebookQueue = function(socialContractId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = 'SELECT * FROM Queue NATURAL JOIN FacebookQueue WHERE requestingUser = ?';
+    var query = conn.query(sql, [socialContractId], function(err, result, fields) {
+        if(err) throw err;
+        callback(result);
+        conn.close();
+    });
+}
+
+// returns a user's Instagram queue
+var getInstagramQueue = function(socialContractId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = 'SELECT * FROM Queue NATURAL JOIN InstagramQueue WHERE requestingUser = ?';
+    var query = conn.query(sql, [socialContractId], function(err, result, fields) {
         if(err) throw err;
         callback(result);
         conn.close();
@@ -395,4 +412,6 @@ module.exports.addFacebookQueue = addFacebookQueue;
 module.exports.addInstagramQueue = addInstagramQueue;
 module.exports.editCoins = editCoins;
 module.exports.getCoins = getCoins;
-module.exports.getQueue = getQueue;
+module.exports.getTwitterQueue = getTwitterQueue;
+module.exports.getFacebookQueue = getFacebookQueue;
+module.exports.getInstagramQueue = getInstagramQueue;

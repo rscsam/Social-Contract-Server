@@ -20,7 +20,7 @@ module.exports.getTwitterAccounts = function(req, res) {
 }
 
 module.exports.addFacebook = function(req, res) {
-    dbconn.addFacebook(req.body.socialContractId, req.body.accessToken, req.body.facebookId, req.body.applicationId,  
+    dbconn.addFacebook(req.body.socialContractId, req.body.accessToken, req.body.facebookId, req.body.applicationId,
         function(result) {
         res.send(result);
     });
@@ -41,7 +41,7 @@ module.exports.getFacebookAccounts = function(req, res) {
 }
 
 module.exports.addInstagram = function(req, res) {
-    dbconn.addInstagram(req.body.socialContractId, req.body.accessToken, req.body.instagramId, 
+    dbconn.addInstagram(req.body.socialContractId, req.body.accessToken, req.body.instagramId,
         req.body.username, function(result) {
         res.send(result);
     });
