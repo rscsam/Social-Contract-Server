@@ -97,18 +97,13 @@ module.exports.getInterestProfile = function(req, res) {
 }
 
 module.exports.changeEmail = function(req, res) {
-    console.log(req.body);
     if (req.body.email == null || req.body.email == "") {
         res.send({'success' : false, 'message' : "email is blank"});
     } else if (req.body.userId == null || req.body.userId == "") {
         res.send({'success' : false, 'message' : "userId is blank"});
     } else {
         dbconn.editEmail(req.body.email, req.body.userId, function(result) {
-            if(!result) {
-                res.send({'success' : false, 'message' : "error editing email"});
-            } else {
-                res.send({'success' : true});
-            }
+            res.send(result);
         });
     }
 }

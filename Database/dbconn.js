@@ -59,12 +59,16 @@ var editEmail = function(email, userId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
     var sql = "UPDATE Users SET email = ? WHERE userId = ?;";
     var query = conn.query(sql, [email, userId], function(err, result, fields) {
-        if (err) throw err;
-        if(result.affectedRows > 0) {
-            callback(true);
+        if (err) {
+            callback({"success": false, "message": "Another user owns this email"});
         } else {
-            callback(false);
+            if(result.affectedRows > 0) {
+                callback({"success": true});
+            } else {
+                callback({"success": true, "message": "Error editing email"});
+            }
         }
+
         conn.close();
     });
 }
