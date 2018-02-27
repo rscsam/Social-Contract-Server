@@ -58,3 +58,116 @@ module.exports.getInstagramAccounts = function(req, res) {
         res.send(result);
     });
 }
+
+module.exports.addTwitterQueue = function(req, res) {
+    dbconn.getCoins(req.body.socialContractId, function(result) {
+        if(result.success) {
+            var coins = result.coins;
+            if(coins >= req.body.cost) {
+
+                dbconn.addTwitterQueue(req.body.socialContractId, req.body.twitterId, req.body.goal,
+                    req.body.type, req.body.mediaId, function(result) {
+                        if (result.success) {
+                            result.newCoinTotal = coins - req.body.cost;
+                            var toSend = result;
+
+                            dbconn.editCoins(req.body.socialContractId, coins - req.body.cost, function(result2) {
+                                if (result2.success) {
+                                    res.send(toSend);
+                                } else {
+                                    toSend.message = "Failed to update coins";
+                                    res.send(toSend);
+                                }
+                            });
+
+                        } else {
+                            res.send(result);
+                        }
+
+                });
+
+            } else {
+                res.send({'success': false, 'message': 'Not enough coins'});
+            }
+        } else {
+            res.send({'success': false, 'message': 'User does not exist'});
+        }
+
+    });
+}
+
+module.exports.addFacebookQueue = function(req, res) {
+    dbconn.getCoins(req.body.socialContractId, function(result) {
+        if(result.success) {
+            var coins = result.coins;
+            if(coins >= req.body.cost) {
+
+                dbconn.addFacebookQueue(req.body.socialContractId, req.body.facebookId, req.body.goal,
+                    req.body.type, req.body.mediaId, function(result) {
+                        if (result.success) {
+                            result.newCoinTotal = coins - req.body.cost;
+                            var toSend = result;
+
+                            dbconn.editCoins(req.body.socialContractId, coins - req.body.cost, function(result2) {
+                                if (result2.success) {
+                                    res.send(toSend);
+                                } else {
+                                    toSend.message = "Failed to update coins";
+                                    res.send(toSend);
+                                }
+                            });
+
+                        } else {
+                            res.send(result);
+                        }
+
+                });
+
+            } else {
+                res.send({'success': false, 'message': 'Not enough coins'});
+            }
+        } else {
+            res.send({'success': false, 'message': 'User does not exist'});
+        }
+
+    });
+}
+
+module.exports.addInstagramQueue = function(req, res) {
+    dbconn.getCoins(req.body.socialContractId, function(result) {
+        if(result.success) {
+            var coins = result.coins;
+            if(coins >= req.body.cost) {
+
+                dbconn.addInstagramQueue(req.body.socialContractId, req.body.instagramId, req.body.goal,
+                    req.body.type, req.body.mediaId, function(result) {
+                        if (result.success) {
+                            result.newCoinTotal = coins - req.body.cost;
+                            var toSend = result;
+
+                            dbconn.editCoins(req.body.socialContractId, coins - req.body.cost, function(result2) {
+                                if (result2.success) {
+                                    res.send(toSend);
+                                } else {
+                                    toSend.message = "Failed to update coins";
+                                    res.send(toSend);
+                                }
+                            });
+
+                        } else {
+                            res.send(result);
+                        }
+
+                });
+
+            } else {
+                res.send({'success': false, 'message': 'Not enough coins'});
+            }
+        } else {
+            res.send({'success': false, 'message': 'User does not exist'});
+        }
+
+    });
+}
+
+

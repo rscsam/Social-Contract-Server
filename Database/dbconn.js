@@ -267,11 +267,14 @@ var addTwitterQueue = function(requestingUser, twitterId, goal, type, mediaId, c
 
             var sql2 = "INSERT INTO TwitterQueue VALUES(?, ?, ?, ?, ?);";
             var query2 = conn.query(sql2, [requestId, requestingUser, twitterId, type, mediaId], function(err, result, fields) {
-                if (err) throw err;
-                if (result.affectedRows > 0) {
-                    callback({'success': true});
+                if (err) {
+                    callback({'success': false, 'message': 'Twitter account not owned by user'});
                 } else {
-                    callback({'success': false, 'message': 'Failed adding into TwitterQueue'});
+                    if (result.affectedRows > 0) {
+                        callback({'success': true});
+                    } else {
+                        callback({'success': false, 'message': 'Failed adding into FacebookQueue'});
+                    }
                 }
             });
         } else {
@@ -292,12 +295,16 @@ var addFacebookQueue = function(requestingUser, facebookId, goal, type, mediaId,
 
             var sql2 = "INSERT INTO FacebookQueue VALUES(?, ?, ?, ?, ?);";
             var query2 = conn.query(sql2, [requestId, requestingUser, facebookId, type, mediaId], function(err, result, fields) {
-                if (err) throw err;
-                if (result.affectedRows > 0) {
-                    callback({'success': true});
+                if (err) {
+                    callback({'success': false, 'message': 'Facebook account not owned by user'});
                 } else {
-                    callback({'success': false, 'message': 'Failed adding into FacebookQueue'});
+                    if (result.affectedRows > 0) {
+                        callback({'success': true});
+                    } else {
+                        callback({'success': false, 'message': 'Failed adding into FacebookQueue'});
+                    }
                 }
+
             });
         } else {
             callback({'success': false, 'message': 'Failed adding into Queue'});
@@ -317,11 +324,14 @@ var addInstagramQueue = function(requestingUser, instagramId, goal, type, mediaI
 
             var sql2 = "INSERT INTO InstagramQueue VALUES(?, ?, ?, ?, ?);";
             var query2 = conn.query(sql2, [requestId, requestingUser, instagramId, type, mediaId], function(err, result, fields) {
-                if (err) throw err;
-                if (result.affectedRows > 0) {
-                    callback({'success': true});
+                if (err) {
+                    callback({'success': false, 'message': 'Instagram account not owned by user'});
                 } else {
-                    callback({'success': false, 'message': 'Failed adding into InstagramQueue'});
+                    if (result.affectedRows > 0) {
+                        callback({'success': true});
+                    } else {
+                        callback({'success': false, 'message': 'Failed adding into InstagramQueue'});
+                    }
                 }
             });
         } else {
@@ -351,7 +361,12 @@ var getCoins = function(socialContractId, callback) {
     var sql = "SELECT coins from Users WHERE userId = ?;";
     var query = conn.query(sql, [socialContractId], function(err, result, fields) {
         if(err) throw err;
-        callback(result);
+        if (result[0]) {
+            callback({"success": true, "coins": result[0].coins});
+        } else {
+            callback({"success": false});
+        }
+
         conn.close();
     });
 }

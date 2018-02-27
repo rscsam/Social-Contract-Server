@@ -4,7 +4,7 @@ const crypto = require('crypto');
 //holds a username and the current nonce
 var nonceMap = new Map();
 
-var login = function(req, res) {
+module.exports.login = function(req, res) {
     dbconn.login(req.body.email, function(result) {
         const hash = crypto.createHash('sha256');
         var dbPass = result + nonceMap.get(req.body.email)
@@ -20,7 +20,7 @@ var login = function(req, res) {
     });
 }
 
-var logininit = function(req, res) {
+module.exports.logininit = function(req, res) {
     console.log('init reached')
     dbconn.checkUser(req.body.email, function(result) {
         if (result.success == true) {
@@ -37,7 +37,7 @@ var logininit = function(req, res) {
     });
 }
 
-var initregistration = function(req, res) {
+module.exports.initregistration = function(req, res) {
     dbconn.checkUser(req.body.email, function(result) {
         if (result.success == false) {
             crypto.randomBytes(32, (err, buff) => {
@@ -50,7 +50,7 @@ var initregistration = function(req, res) {
     });
 }
 
-var register = function(req, res) {
+module.exports.register = function(req, res) {
     console.log(req.body);
     dbconn.register(req.body.email, req.body.password, req.body.salt, function(err) {
         if(err) {
@@ -96,7 +96,7 @@ module.exports.getInterestProfile = function(req, res) {
     });
 }
 
-var changeEmail = function(req, res) {
+module.exports.changeEmail = function(req, res) {
     console.log(req.body);
     if (req.body.email == null || req.body.email == "") {
         res.send({'success' : false, 'message' : "email is blank"});
@@ -113,7 +113,7 @@ var changeEmail = function(req, res) {
     }
 }
 
-var changePassword = function(req, res) {
+module.exports.changePassword = function(req, res) {
     console.log(req.body);
     if (req.body.password == null || req.body.password == "") {
         res.send({'success' : false, 'message' : "password is blank"});
@@ -130,9 +130,19 @@ var changePassword = function(req, res) {
     }
 }
 
-module.exports.login = login;
-module.exports.logininit = logininit;
-module.exports.initregistration = initregistration;
-module.exports.register = register;
-module.exports.changeEmail = changeEmail;
-module.exports.changePassword = changePassword;
+module.exports.getCoins = function(req, res) {
+    dbconn.getCoins(req.body.socialContractId, function(result) {
+        res.send(result);
+    });
+
+}
+
+module.exports.getQueue = function(req, res) {
+    dbconn.getTwitterQueue(req.body.socialContractId, function(twitterResult) {
+        dbconn.getFacebookQueue(req.body.socialContractId, function(facebookResult) {
+            dbconn.getInstagramQueue(req.body.socialContractId, function(instagramResult) {
+                res.send({"twitter": twitterResult, "facebook": facebookResult, "instagram": instagramResult});
+            });
+        });
+    });
+}
