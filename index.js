@@ -39,25 +39,54 @@ app.post('/changePassword', (req, res) => profile.changePassword (req, res) );
 // update the users interest profile
 app.post('/updateInterestProfile', (req, res) => profile.updateInterestProfile(req, res) );
 
+// gets the user's interest profile
 app.post('/interestProfile', (req, res) => profile.getInterestProfile(req, res) );
 
+// adds a Twitter account
 app.post('/addTwitter', (req, res) => socialmedia.addTwitter(req, res) );
 
+// adds a Facebook account
 app.post('/addFacebook', (req, res) => socialmedia.addFacebook(req, res) );
 
+// adds an Instagram account
 app.post('/addInstagram', (req, res) => socialmedia.addInstagram(req, res) );
 
+// deletes a Twitter account
 app.post('/deleteTwitter', (req, res) => socialmedia.deleteTwitter(req, res) );
 
+// deletes a Facebook account
 app.post('/deleteFacebook', (req, res) => socialmedia.deleteFacebook(req, res) );
 
+// deletes an Instagram account
 app.post('/deleteInstagram', (req, res) => socialmedia.deleteInstagram(req, res) );
 
+// returns a list of a user's Twitter accounts
 app.post('/twitterAccounts', (req, res) => socialmedia.getTwitterAccounts(req, res) );
 
+// returns a list of a user's Facebook accounts
 app.post('/facebookAccounts', (req, res) => socialmedia.getFacebookAccounts(req, res) );
 
+// returns a list of a user's Instagram accounts
 app.post('/instagramAccounts', (req, res) => socialmedia.getInstagramAccounts(req, res) );
 
-app.listen(3000, () => console.log('Server running on port 3000'));
+// returns a user's current coin total
+// params: socialContractId
+app.post('/getCoins', (req, res) => profile.getCoins(req, res) );
 
+// adds an item to the Twitter queue and edits user total accordingly
+// params: socialContractId, cost, twitterId, goal, type, mediaId
+app.post('/addTwitterQueue', (req, res) => socialmedia.addTwitterQueue(req, res) );
+
+// adds an item to the Facebook queue and edits user total accordingly
+// params: socialContractId, cost, facebookId, goal, type, mediaId
+app.post('/addFacebookQueue', (req, res) => socialmedia.addFacebookQueue(req, res) );
+
+// adds an item to the Instagram queue and edits user total accordingly
+// params: socialContractId, cost, instagramId, goal, type, mediaId
+app.post('/addInstagramQueue', (req, res) => socialmedia.addInstagramQueue(req, res) );
+
+// gets a user's queue
+// params: socialContractId
+app.post('/getQueue', (req, res) => profile.getQueue(req, res) );
+
+app.listen(3000, () => console.log('Server running on port 3000'));
