@@ -170,4 +170,48 @@ module.exports.addInstagramQueue = function(req, res) {
     });
 }
 
+module.exports.addViewed = function(req, res) {
+    type = req.body.type;
+    if (type == 'TWITTER') {
+        dbconn.insertViewedTwitter(req.body.socialContractId, req.body.mediaId, function(result) {
+            res.send(result);
+        });
+    } else if (type == 'INSTAGRAM') {
+        dbconn.insertViewedInstagram(req.body.socialContractId, req.body.mediaId, function(result) {
+            res.send(result);
+        });
+    } else {
+        res.send({'success': false, 'message': 'Type does not exist'});
+    }
+}
 
+module.exports.deleteFromQueue = function(req, res) {
+    type = req.body.type;
+    if (type == 'TWITTER')  {
+        dbconn.deleteFromTwitterQueue(req.body.requestId, function(result) {
+            res.send(result);
+        });
+    } else if (type == 'INSTAGRAM') {
+        dbconn.deleteFromInstagramQueue(req.body.requestId, function(result) {
+            res.send(result);
+        });
+    } else {
+        res.send({'success': false, 'message': 'Type does not exist'});
+    }
+}
+
+module.exports.getDiscover = function(req, res) {
+    type = req.body.type;
+    if (type == 'TWITTER')  {
+        dbconn.getDiscoverTwitter(req.body.socialContractId, function(result) {
+            res.send(result);
+        });
+    } else if (type == 'INSTAGRAM') {
+        dbconn.getDiscoverInstagram(req.body.socialContractId, function(result) {
+            res.send(result);
+        });
+    } else {
+        res.send({'success': false, 'message': 'Type does not exist'});
+    }
+
+}

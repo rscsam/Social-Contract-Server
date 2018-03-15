@@ -89,4 +89,16 @@ app.post('/addInstagramQueue', (req, res) => socialmedia.addInstagramQueue(req, 
 // params: socialContractId
 app.post('/getQueue', (req, res) => profile.getQueue(req, res) );
 
+// marks that a user has seen content already
+// params: socialContractId, mediaId, type
+app.post('/addViewed', (req, res) => socialmedia.addViewed(req, res) );
+
+// deletes an item from the queue
+// params: requestId, type
+app.post('/deleteFromQueue', (req, res) => socialmedia.deleteFromQueue(req, res) );
+
+// gets discover queue
+// params: socialContractId, type
+app.post('/getDiscover', (req, res) => socialmedia.getDiscover(req, res) );
+
 app.listen(3000, () => console.log('Server running on port 3000'));
