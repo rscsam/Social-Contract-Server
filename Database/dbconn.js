@@ -378,7 +378,7 @@ var getCoins = function(socialContractId, callback) {
 // returns a user's Facebook queue
 var getTwitterQueue = function(socialContractId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
-    var sql = 'SELECT * FROM Queue NATURAL JOIN TwitterQueue WHERE requestingUser = ?';
+    var sql = 'SELECT * FROM Queue NATURAL JOIN TwitterQueue WHERE requestingUser = ? ORDER BY requestId ASC';
     var query = conn.query(sql, [socialContractId], function(err, result, fields) {
         if(err) throw err;
         callback(result);
@@ -389,7 +389,7 @@ var getTwitterQueue = function(socialContractId, callback) {
 // returns a user's Facebook queue
 var getFacebookQueue = function(socialContractId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
-    var sql = 'SELECT * FROM Queue NATURAL JOIN FacebookQueue WHERE requestingUser = ?';
+    var sql = 'SELECT * FROM Queue NATURAL JOIN FacebookQueue WHERE requestingUser = ? ORDER BY requestId ASC';
     var query = conn.query(sql, [socialContractId], function(err, result, fields) {
         if(err) throw err;
         callback(result);
@@ -400,13 +400,155 @@ var getFacebookQueue = function(socialContractId, callback) {
 // returns a user's Instagram queue
 var getInstagramQueue = function(socialContractId, callback) {
     const conn = mysql.createConnection(dbcredentials.db);
-    var sql = 'SELECT * FROM Queue NATURAL JOIN InstagramQueue WHERE requestingUser = ?';
+    var sql = 'SELECT * FROM Queue NATURAL JOIN InstagramQueue WHERE requestingUser = ? ORDER BY requestId ASC';
     var query = conn.query(sql, [socialContractId], function(err, result, fields) {
         if(err) throw err;
         callback(result);
         conn.close();
     });
 }
+
+// inserts into ViewedMedia that a user has seen a particular piece of media
+var insertViewedTwitter = function(socialContractId, mediaId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = 'INSERT INTO ViewedTwitter VAlUE(?, ?);';
+    var query = conn.query(sql, [socialContractId, mediaId], function(err, result, fields) {
+        if(err) {
+            if (err.errno == 1062) {
+                callback({"success": false, "message": "Entry already exists"});
+            } else {
+                throw err;
+            }
+        }
+
+        callback({"success": true});
+        conn.close();
+    });
+}
+
+// inserts into ViewedMedia that a user has seen a particular piece of media
+var insertViewedInstagram = function(socialContractId, mediaId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = 'INSERT INTO ViewedInstagram VAlUE(?, ?);';
+    var query = conn.query(sql, [socialContractId, mediaId], function(err, result, fields) {
+        if(err) {
+            if (err.errno == 1062) {
+                callback({"success": false, "message": "Entry already exists"});
+            } else {
+                throw err;
+            }
+        }
+
+        callback({"success": true});
+        conn.close();
+    });
+}
+
+// gets items from Twitter queue that the user has not seen, are not their own content, and match interest profiles
+var getDiscoverTwitter = function(socialContractId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = 'SELECT * FROM TwitterQueue as t ' +
+              'WHERE NOT t.requestingUser = ? ' +
+              'AND (BINARY (SELECT interest FROM Users as u WHERE u.userId = t.requestingUser) & ' +
+                   'BINARY (SELECT interest FROM Users as v WHERE v.userId = ?)) ' +
+              'AND t.mediaId NOT IN ' +
+                    '( ' +
+                    'SELECT mediaId ' +
+                    'FROM ViewedTwitter as vt ' +
+                    'WHERE vt.userId = ? ' +
+                    ') ' +
+              'AND t.requestId NOT IN ' +
+                    '( ' +
+                    'SELECT requestId ' +
+                    'FROM Queue as q ' +
+                    'WHERE q.goal <= q.progress ' +
+                    ');';
+    var query = conn.query(sql, [socialContractId, socialContractId, socialContractId], function(err, result, fields) {
+        if (err) throw err;
+        callback(result);
+        conn.close();
+    });
+}
+
+// gets items from Instagram queue that the user has not seen, are not their own content, and match interest profiles
+var getDiscoverInstagram = function(socialContractId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = 'SELECT * FROM InstagramQueue as i ' +
+              'WHERE NOT i.requestingUser = ? ' +
+              'AND (BINARY (SELECT interest FROM Users as u WHERE u.userId = i.requestingUser) & ' +
+                   'BINARY (SELECT interest FROM Users as v WHERE v.userId = ? )) ' +
+              'AND i.mediaId NOT IN ' +
+                '( ' +
+                'SELECT mediaId ' +
+                'FROM ViewedInstagram as vi ' +
+                'WHERE vi.userId = ? ' +
+                ')' +
+              'AND i.requestId NOT IN ' +
+                '(' +
+                'SELECT requestId ' +
+                'FROM Queue as q ' +
+                'WHERE q.goal <= q.progress ' +
+                ');';
+    var query = conn.query(sql, [socialContractId, socialContractId, socialContractId], function(err, result, fields) {
+        if (err) throw err;
+        callback(result);
+        conn.close();
+    });
+}
+
+// deletes a request from the Twitter queue
+var deleteFromTwitterQueue = function(requestId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = 'DELETE FROM TwitterQueue WHERE requestId = ?';
+    var query = conn.query(sql, [requestId], function(err, result, fields) {
+        if (err) throw err;
+        if (result.affectedRows > 0) {
+            deleteFromQueue(requestId, function(queueResult) {
+                if (queueResult.affectedRows > 0) {
+                    callback({'success': true});
+                } else {
+                    callback({'success': false, 'message': 'Could not delete from Queue'});
+                }
+            });
+        } else {
+            callback({'success': false, 'message': 'Could not delete from TwitterQueue'});
+        }
+        conn.close();
+    });
+}
+
+// deletes a request from the Instagram queue
+var deleteFromInstagramQueue = function(requestId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = 'DELETE FROM InstagramQueue WHERE requestId = ?';
+    var query = conn.query(sql, [requestId], function(err, result, fields) {
+        if (err) throw err;
+        if (result.affectedRows > 0) {
+            deleteFromQueue(requestId, function(queueResult) {
+                if (queueResult.affectedRows > 0) {
+                    callback({'success': true});
+                } else {
+                    callback({'success': false, 'message': 'Could not delete from Queue'});
+                }
+            });
+        } else {
+            callback({'success': false, 'message': 'Could not delete from InstagramQueue'});
+        }
+        conn.close();
+    });
+}
+
+// deletes a request from Queue
+var deleteFromQueue = function(requestId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = 'DELETE FROM Queue WHERE requestId = ?';
+    var query = conn.query(sql, [requestId], function(err, result, fields) {
+        if (err) throw err;
+        callback(result);
+        conn.close();
+    });
+}
+
 
 
 module.exports.login = login;
@@ -434,3 +576,9 @@ module.exports.getCoins = getCoins;
 module.exports.getTwitterQueue = getTwitterQueue;
 module.exports.getFacebookQueue = getFacebookQueue;
 module.exports.getInstagramQueue = getInstagramQueue;
+module.exports.insertViewedTwitter = insertViewedTwitter;
+module.exports.insertViewedInstagram = insertViewedInstagram;
+module.exports.getDiscoverTwitter = getDiscoverTwitter;
+module.exports.getDiscoverInstagram = getDiscoverInstagram;
+module.exports.deleteFromTwitterQueue = deleteFromTwitterQueue;
+module.exports.deleteFromInstagramQueue = deleteFromInstagramQueue;
