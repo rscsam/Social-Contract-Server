@@ -549,6 +549,21 @@ var deleteFromQueue = function(requestId, callback) {
     });
 }
 
+// updates the progress on a request
+var updateProgress = function(requestId, callback) {
+    const conn = mysql.createConnection(dbcredentials.db);
+    var sql = "UPDATE Queue SET progress = progress + 1 WHERE requestId = ?";
+    var query = conn.query(sql, [requestId], function(err, result, fields) {
+        if (err) throw err;
+        if (result.affectedRows > 0) {
+            callback({"success": true});
+        } else {
+           callback({"success": false});
+        }
+        conn.close();
+    })
+}
+
 
 
 module.exports.login = login;
@@ -582,3 +597,4 @@ module.exports.getDiscoverTwitter = getDiscoverTwitter;
 module.exports.getDiscoverInstagram = getDiscoverInstagram;
 module.exports.deleteFromTwitterQueue = deleteFromTwitterQueue;
 module.exports.deleteFromInstagramQueue = deleteFromInstagramQueue;
+module.exports.updateProgress = updateProgress;

@@ -141,3 +141,9 @@ module.exports.getQueue = function(req, res) {
         });
     });
 }
+
+module.exports.updateProgress = function(req, res) {
+    dbconn.updateProgress(req.body.requestId, function(result) {
+        res.send(result);
+    });
+}

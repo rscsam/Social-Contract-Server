@@ -101,4 +101,8 @@ app.post('/deleteFromQueue', (req, res) => socialmedia.deleteFromQueue(req, res)
 // params: socialContractId, type
 app.post('/getDiscover', (req, res) => socialmedia.getDiscover(req, res) );
 
+// adds 1 to the progress of a queue item
+//params: requestId
+app.post('/updateProgress', (req, res) => profile.updateProgress(req, res) );
+
 app.listen(3000, () => console.log('Server running on port 3000'));
