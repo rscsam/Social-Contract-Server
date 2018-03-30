@@ -204,11 +204,11 @@ module.exports.getDiscover = function(req, res) {
     type = req.body.type;
     if (type == 'TWITTER')  {
         dbconn.getDiscoverTwitter(req.body.socialContractId, function(result) {
-            res.send(result);
+            res.send({'queue': result});
         });
     } else if (type == 'INSTAGRAM') {
         dbconn.getDiscoverInstagram(req.body.socialContractId, function(result) {
-            res.send(result);
+            res.send({'queue': result});
         });
     } else {
         res.send({'success': false, 'message': 'Type does not exist'});
