@@ -105,4 +105,8 @@ app.post('/getDiscover', (req, res) => socialmedia.getDiscover(req, res) );
 //params: requestId
 app.post('/updateProgress', (req, res) => profile.updateProgress(req, res) );
 
+// updates progress, adds coins, and adds viewed
+//params: socialContractId, requestId, mediaId, type, coins
+app.post('/discover', (req, res) => profile.discover(req, res) );
+
 app.listen(3000, () => console.log('Server running on port 3000'));
