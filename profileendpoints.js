@@ -129,7 +129,6 @@ module.exports.getCoins = function(req, res) {
     dbconn.getCoins(req.body.socialContractId, function(result) {
         res.send(result);
     });
-
 }
 
 module.exports.getQueue = function(req, res) {
@@ -146,4 +145,22 @@ module.exports.updateProgress = function(req, res) {
     dbconn.updateProgress(req.body.requestId, function(result) {
         res.send(result);
     });
+}
+
+module.exports.discover = function(req, res) {
+    dbconn.updateProgress(req.body.requestId, function(result) {
+        if (req.body.type == 'TWITTER') {
+            dbconn.insertViewedTwitter(req.body.socialContractId, req.body.mediaId, function(result) {
+                dbconn.editCoins(req.body.socialContractId, req.body.coins, function(result) {
+                    res.send(result);
+                });
+            });
+        } else {
+            dbconn.insertViewedInstagram(req.body.socialContractId, req.body.mediaId, function(result) {
+                dbconn.editCoins(req.body.socialContractId, req.body.coins, function(result) {
+                    res.send(result);
+                });
+            }); 
+        }
+    })
 }
